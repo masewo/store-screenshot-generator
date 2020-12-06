@@ -19,25 +19,29 @@ def main():
 def merge_with_background(i, folder, path, name):
     screenshot = Image.open(path)
     screenshot_size = screenshot.size
-    print(screenshot_size)
 
     if screenshot_size[0] > screenshot_size[1]:
         landscape = True
     else:
         landscape = False
 
-    # TODO calculate correct image size here
     image_size = (2160, 3840)
 
     if landscape:
         image_size = image_size[::-1]
+
+    factor_height = 0.75
+    screenshot_size = (screenshot_size[0] * factor_height, screenshot_size[1] * factor_height)
+    screenshot.thumbnail(screenshot_size, Image.LANCZOS)
 
     background_path = 'input\\backgrounds\\' + str(i) + '_' + ('land' if landscape else 'port') + '.svg'
     background = convert_to_png(background_path, image_size)
 
     new_image = Image.new('RGBA', (image_size[0], image_size[1]), (255, 0, 0, 0))
 
-    offset = (int(image_size[0] / 2 - screenshot_size[0] / 2), image_size[1] - screenshot_size[1])
+    offset = (
+        int(image_size[0] / 2 - screenshot_size[0] / 2),
+        int(image_size[1] - screenshot_size[1] - screenshot_size[1] * 0.10))
 
     new_image.paste(background, (0, 0))
     new_image.paste(screenshot, offset, screenshot)
