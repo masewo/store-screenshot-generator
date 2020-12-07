@@ -30,9 +30,16 @@ def merge_with_background(i, folder, path, name):
     if landscape:
         image_size = image_size[::-1]
 
-    factor_height = 0.75
-    screenshot_size = (screenshot_size[0] * factor_height, screenshot_size[1] * factor_height)
-    screenshot.thumbnail(screenshot_size, Image.LANCZOS)
+    percent_of_height_visible = 0.78
+    percent_of_height_padding = 0.04
+
+    percent_of_height_for_screenshot = percent_of_height_visible - 2 * percent_of_height_padding
+
+    maximum_screenshot_height = min(screenshot_size[1], image_size[1] * percent_of_height_for_screenshot)
+    scaled_screenshot_size = (
+        screenshot_size[0] * (maximum_screenshot_height / screenshot_size[1]), maximum_screenshot_height)
+
+    screenshot.thumbnail(scaled_screenshot_size, Image.LANCZOS)
 
     background_path = 'input\\backgrounds\\' + str(i) + '_' + ('land' if landscape else 'port') + '.svg'
     background = convert_to_png(background_path, image_size)
@@ -40,8 +47,8 @@ def merge_with_background(i, folder, path, name):
     new_image = Image.new('RGBA', (image_size[0], image_size[1]), (255, 0, 0, 0))
 
     offset = (
-        int(image_size[0] / 2 - screenshot_size[0] / 2),
-        int(image_size[1] - screenshot_size[1] - screenshot_size[1] * 0.10))
+        int(image_size[0] / 2 - scaled_screenshot_size[0] / 2),
+        int(image_size[1] - scaled_screenshot_size[1] - image_size[1] * percent_of_height_padding))
 
     new_image.paste(background, (0, 0))
     new_image.paste(screenshot, offset, screenshot)
