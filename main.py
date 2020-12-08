@@ -26,6 +26,7 @@ def merge_with_background(i, folder, path, name):
         landscape = False
 
     image_size = (2160, 3840)
+    # image_size = (2048, 2732)
 
     if landscape:
         image_size = image_size[::-1]
@@ -58,7 +59,13 @@ def merge_with_background(i, folder, path, name):
 
 def convert_to_png(path, size):
     out = BytesIO()
-    cairosvg.svg2png(url=path, write_to=out, output_width=size[0], output_height=size[1])
+    cairosvg.svg2png(url=path, write_to=out,
+                     output_width=size[0],
+                     output_height=size[1],
+                     # parent_width=size[0],
+                     # parent_height=size[1],
+                     background_color="rgba(1, 161, 145, 255)"
+                     )
     return Image.open(out)
 
 
